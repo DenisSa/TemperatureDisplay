@@ -82,7 +82,7 @@ void init() {
 	transferByte(0x12, 0x00);
 
 	transferByte(0x81, 0x00);
-	transferByte(0x0F, 0x00);
+	transferByte(0x7F, 0x00);
 
 	transferByte(0xD9, 0x00);
 	transferByte(0x11, 0x00);
@@ -128,7 +128,7 @@ void oled_putc_raw(char c) {
 void oled_clear() {
 	oled_home();
 	//setpin(DC,1);
-	for(uint16_t i = 889; i > 0; i--) {
+	for(uint16_t i = 1024; i > 0; i--) {
 		transferByte(0x00, 1);
 	}
 }
