@@ -12,9 +12,9 @@
  * Display:
  * PB3: C/S This pin is the chip select input. (active LOW).
  * PB4: D/C This is Data/Command control pin. When it is pulled HIGH (i.e. connect to VDD), the data
-		at D[7:0] is treated as data. When it is pulled LOW, the data at D[7:0] will be transferred
-		to the command register
-		When 3-wire serial interface is selected, this pin must be connected to VSS.
+ at D[7:0] is treated as data. When it is pulled LOW, the data at D[7:0] will be transferred
+ to the command register
+ When 3-wire serial interface is selected, this pin must be connected to VSS.
 
  * PB2: CLK When serial interface mode is selected, D0 will be the serial clock input: SCLK;
  * PB0: MOSI D1 will be the serial data input
@@ -59,26 +59,34 @@ int main(void) {
 	oled_clear();
 	while (1) {
 		if (readTempData(&temp, &humidity) == 0) {
+			oled_clear_fast();
 //#ifdef DEBUG
 			ftoa(temp, x, 4);
 			ftoa(humidity, y, 4);
-			oled_clear();
-			oled_move(line, 7);
-			oled_puts("TMP: ");
-			for (int i = 0; i < 4; i++) {
-				oled_putc(x[i]);
+			for (int j = 0; j < 7; j++) {
+				//oled_clear_fast();
+				oled_move(line, j);
+				oled_puts("TMP: ");
+				for (int i = 0; i < 4; i++) {
+					oled_putc(x[i]);
+				}
+				oled_move(line + 2, j);
+				oled_puts("HUM: ");
+				for (int i = 0; i < 4; i++) {
+					oled_putc(y[i]);
+				}
+				_delay_ms(100);
+				if (j < 6) {
+					oled_clear_fast();
+				}
+
 			}
-			oled_move(line+2, 7);
-			oled_puts("HUM: ");
-			for (int i = 0; i < 4; i++) {
-				oled_putc(y[i]);
-			}
-			if(line < 5){
-				line ++;
-			}
-			else{
+			if (line < 5) {
+				line++;
+			} else {
 				line = 0;
 			}
+
 //#endif
 		} else {
 #ifdef DEBUG
@@ -146,5 +154,4 @@ void ftoa(float n, char *res, int afterpoint) {
 		intToStr((int) fpart, res + i + 1, afterpoint);
 	}
 }
-
 

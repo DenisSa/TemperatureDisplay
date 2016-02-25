@@ -20,12 +20,13 @@
 
 #define OUT 1
 #define IN 0
-
+struct clear;
 void transferByte(int address, int data);
 void init();
 void oled_clear();
 void oled_puts(char *str);
 void oled_putc_raw(char c);
 void oled_putc(char c);
-void oled_move(int row, int col);
-void oled_move_raw(int row, int col);
+void oled_move(short row, short col);
+void oled_move_raw(short row, short col);
+void oled_clear_fast();

@@ -12,14 +12,22 @@
 #include "softuart.h"
 #endif
 
+struct clear {
+	short row;
+	short start_col;
+	short end_col;
+};
+
+struct clear coords[7];
+short globCounter = 0;
+
 void transferByte(int address, int data) {
 #ifdef DEBUG
 	softuart_puts_P("\r\nStart\r\n");
 #endif
-	if(data > 0){
+	if (data > 0) {
 		setpin(DC, 1);
-	}
-	else {
+	} else {
 		setpin(DC, 0);
 	}
 	setpin(CS, 0);
@@ -105,51 +113,88 @@ void oled_home() {
 }
 
 void oled_puts(char *str) {
-	while(*str != 0) {
+	while (*str != 0) {
 		oled_putc(*str++);
 	}
 }
 
 void oled_putc(char c) {
 	// remap from petscii to ascii, shifts drawing characters into the lower 32 ascii cells
-	if(c > 'A' && c < 'Z') { }               // upper-case ascii range
-	else if(c > 'a' && c < 'z') { c -= 96; } // lower-case ascii range
-	else if(c > 31 && c < 64) { }            // numbers and symbols
-	else if(c < 32) { c += 96; }             // low ascii
+	if (c > 'A' && c < 'Z') {
+	}               // upper-case ascii range
+	else if (c > 'a' && c < 'z') {
+		c -= 96;
+	} // lower-case ascii range
+	else if (c > 31 && c < 64) {
+	}            // numbers and symbols
+	else if (c < 32) {
+		c += 96;
+	}             // low ascii
 	oled_putc_raw(c);
 }
 
 void oled_putc_raw(char c) {
-	for(uint16_t i = c << 3; i < (c << 3) + 8; i++) {
+	for (uint16_t i = c << 3; i < (c << 3) + 8; i++) {
 		transferByte(pgm_read_byte(font + i), 1);
 	}
+	coords[globCounter-1].end_col = coords[globCounter-1].end_col + 8;
 }
 
 void oled_clear() {
+	//need to record used spaces
 	oled_home();
 	//setpin(DC,1);
-	for(uint16_t i = 1024; i > 0; i--) {
+	for (uint16_t i = 1024; i > 0; i--) {
 		transferByte(0x00, 1);
 	}
 }
 
-void oled_move(int row, int col) {
-	if(col > 15) { col = 15; }
-	if(row > 7) { row = 7; }
+void oled_clear_fast() {
+	//need to record used spaces
+	for (int i = 0; i < globCounter; i++) {
+		oled_move(coords[i].row, coords[i].start_col);
+		globCounter--;
+		for (short j = coords[i].start_col; j <= coords[i].end_col; j++) {
+			transferByte(0x00, 1);
+			//_delay_ms(25);
+		}
+	}
+	globCounter = 0;
+	//oled_move()
+	//setpin(DC,1);
+	//for(uint16_t i = 1024; i > 0; i--) {
+	//	transferByte(0x00, 1);
+	//}
+}
+
+void oled_move(short row, short col) {
+	if (col > 15) {
+		col = 15;
+	}
+	if (row > 7) {
+		row = 7;
+	}
+
+	coords[globCounter].start_col = col;
+	coords[globCounter].end_col = col;
+	coords[globCounter].row = row;
+	globCounter++;
 
 	oled_move_raw(row, col << 3);
 }
 
-void oled_move_raw(int row, int col) {
-	if(col > 127) { col = 127; }
-	if(row > 7) { row = 7; }
-
-	transferByte(0x21,0);     // set column
-	transferByte(col,0);      // start = col
-	transferByte(0x7F,0);     // end = col max
-	transferByte(0x22,0);     // set row
-	transferByte(row,0);      // start = row
-	transferByte(0x07,0);     // end = row max
+void oled_move_raw(short row, short col) {
+	if (col > 127) {
+		col = 127;
+	}
+	if (row > 7) {
+		row = 7;
+	}
+	transferByte(0x21, 0);     // set column
+	transferByte(col, 0);      // start = col
+	transferByte(0x7F, 0);     // end = col max
+	transferByte(0x22, 0);     // set row
+	transferByte(row, 0);      // start = row
+	transferByte(0x07, 0);     // end = row max
 }
-
 
