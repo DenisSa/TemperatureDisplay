@@ -5,5 +5,4 @@
 #define TDDR DDRB
 #define DHT_TIMEOUT 200
 
-uint8_t readTempData(float *temperature, float *humidity);
-void setpin(int pn, int val);
+uint8_t readTempData_dht22(float *temperature, float *humidity);

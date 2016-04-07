@@ -10,10 +10,7 @@
 #include <stdio.h>
 #endif
 
-uint8_t readTempData(float *temperature, float *humidity);
-void setpin(int pn, int val);
-
-uint8_t readTempData(float *temperature, float *humidity) {
+uint8_t readTempData_dht22(float *temperature, float *humidity) {
 
 	uint8_t i, j = 0;
 	uint8_t bits[5];

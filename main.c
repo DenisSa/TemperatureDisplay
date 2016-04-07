@@ -25,7 +25,10 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "dht22.h"
+#ifdef DISPLAY
 #include "ssd1306.h"
+#endif
+#include "ds18b20.h"
 
 #ifdef DEBUG
 #include <avr/interrupt.h>
@@ -40,11 +43,13 @@ int intToStr(int x, char str[], int d);
 void reverse(char *str, int len);
 
 int main(void) {
-	float temp;
-	float humidity;
+	//float temp = 0;
+	//float humidity = 0;
+	float ds_temp = 0;
 
-	char x[10];
-	char y[10];
+	//char x[10];
+	//char y[10];
+	char z[10];
 	int line = 0;
 #ifdef DEBUG
 	softuart_init();
@@ -53,19 +58,27 @@ int main(void) {
 	sei();
 	softuart_puts_P("\r\nInit\r\n");
 #endif
+#ifdef DISPLAY
 	DDRB |= SS1306_OLED_PBM;
-	_delay_ms(1000);
+	//_delay_ms(1000);
 	init();
 	oled_clear();
+#endif
 	while (1) {
-		if (readTempData(&temp, &humidity) == 0) {
+		//if (readTempData_dht22(&temp, &humidity) == 0) {
+		if (readTempData_ds18b20(&ds_temp) == 0) {
+/*#ifdef DISPLAY
 			oled_clear_fast();
+#endif
+			ds_temp = ds_temp/16.0;
 //#ifdef DEBUG
-			ftoa(temp, x, 4);
-			ftoa(humidity, y, 4);
+			//ftoa(temp, x, 4);
+			//ftoa(humidity, y, 4);
+			ftoa(ds_temp, z, 4);
 			for (int j = 0; j < 7; j++) {
-				//oled_clear_fast();
+				oled_clear_fast();
 				oled_move(line, j);
+
 				oled_puts("TMP: ");
 				for (int i = 0; i < 4; i++) {
 					oled_putc(x[i]);
@@ -74,6 +87,11 @@ int main(void) {
 				oled_puts("HUM: ");
 				for (int i = 0; i < 4; i++) {
 					oled_putc(y[i]);
+				}
+				//oled_move(line + 4, j);
+				oled_puts("TMP: ");
+				for (int i = 0; i < 4; i++) {
+					oled_putc(z[i]);
 				}
 				_delay_ms(100);
 				if (j < 6) {
@@ -89,12 +107,14 @@ int main(void) {
 
 //#endif
 		} else {
+			oled_puts("Error");
 #ifdef DEBUG
 			softuart_puts_P("Something else\r\n");
 #endif
 		}
 		_delay_ms(5000);
 	}
+	*/
 	return 1;
 
 }
