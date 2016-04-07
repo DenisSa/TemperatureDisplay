@@ -47,10 +47,7 @@ int main(void) {
 	//float humidity = 0;
 	float ds_temp = 0;
 
-	//char x[10];
-	//char y[10];
-	char z[10];
-	int line = 0;
+
 #ifdef DEBUG
 	softuart_init();
 	softuart_turn_rx_on(); /* redundant - on by default */
@@ -59,6 +56,10 @@ int main(void) {
 	softuart_puts_P("\r\nInit\r\n");
 #endif
 #ifdef DISPLAY
+	int line = 0;
+	char x[10];
+	char y[10];
+	char z[10];
 	DDRB |= SS1306_OLED_PBM;
 	//_delay_ms(1000);
 	init();
@@ -67,54 +68,56 @@ int main(void) {
 	while (1) {
 		//if (readTempData_dht22(&temp, &humidity) == 0) {
 		if (readTempData_ds18b20(&ds_temp) == 0) {
-/*#ifdef DISPLAY
-			oled_clear_fast();
-#endif
-			ds_temp = ds_temp/16.0;
-//#ifdef DEBUG
-			//ftoa(temp, x, 4);
-			//ftoa(humidity, y, 4);
-			ftoa(ds_temp, z, 4);
-			for (int j = 0; j < 7; j++) {
-				oled_clear_fast();
-				oled_move(line, j);
+			/*#ifdef DISPLAY
+			 oled_clear_fast();
+			 #endif
+			 ds_temp = ds_temp/16.0;
+			 //#ifdef DEBUG
+			 //ftoa(temp, x, 4);
+			 //ftoa(humidity, y, 4);
+			 ftoa(ds_temp, z, 4);
+			 for (int j = 0; j < 7; j++) {
+			 oled_clear_fast();
+			 oled_move(line, j);
 
-				oled_puts("TMP: ");
-				for (int i = 0; i < 4; i++) {
-					oled_putc(x[i]);
-				}
-				oled_move(line + 2, j);
-				oled_puts("HUM: ");
-				for (int i = 0; i < 4; i++) {
-					oled_putc(y[i]);
-				}
-				//oled_move(line + 4, j);
-				oled_puts("TMP: ");
-				for (int i = 0; i < 4; i++) {
-					oled_putc(z[i]);
-				}
-				_delay_ms(100);
-				if (j < 6) {
-					oled_clear_fast();
-				}
+			 oled_puts("TMP: ");
+			 for (int i = 0; i < 4; i++) {
+			 oled_putc(x[i]);
+			 }
+			 oled_move(line + 2, j);
+			 oled_puts("HUM: ");
+			 for (int i = 0; i < 4; i++) {
+			 oled_putc(y[i]);
+			 }
+			 //oled_move(line + 4, j);
+			 oled_puts("TMP: ");
+			 for (int i = 0; i < 4; i++) {
+			 oled_putc(z[i]);
+			 }
+			 _delay_ms(100);
+			 if (j < 6) {
+			 oled_clear_fast();
+			 }
 
-			}
-			if (line < 5) {
-				line++;
-			} else {
-				line = 0;
-			}
+			 }
+			 if (line < 5) {
+			 line++;
+			 } else {
+			 line = 0;
+			 }
 
-//#endif
-		} else {
-			oled_puts("Error");
-#ifdef DEBUG
-			softuart_puts_P("Something else\r\n");
-#endif
+			 //#endif
+			 } else {
+			 oled_puts("Error");
+			 #ifdef DEBUG
+			 softuart_puts_P("Something else\r\n");
+			 #endif
+			 */
 		}
+
 		_delay_ms(5000);
 	}
-	*/
+
 	return 1;
 
 }
