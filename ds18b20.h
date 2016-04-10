@@ -1,7 +1,6 @@
-#define TDATA PB1
+#define TDATA PB2
 #define TPIN PINB
 #define TDDR DDRB
-#define DHT_TIMEOUT 200
 
 uint8_t readTempData_ds18b20(float *temperature);
 uint8_t resetSensor();

@@ -17,7 +17,6 @@ uint8_t readTempData_ds18b20(float *temperature) {
 	OWWriteByte(0xCC); //skip rom
 	OWWriteByte(0xBE); //read scratchpad
 	*temperature = readScratchpad(2);
-	resetSensor();
 	return 0;
 }
 
@@ -28,7 +27,7 @@ uint8_t resetSensor() {
 	setpin(TDATA, 1); //PB1 high VDD init
 	_delay_ms(100);
 	setpin(TDATA, 0);
-	_delay_us(480);
+	_delay_us(490);
 	setdirection(TDATA, 0);
 	_delay_us(70);
 	result = (TPIN & (1 << TDATA));
@@ -139,12 +138,20 @@ void OWBlock(unsigned char *data, int data_len)
 }
 
 int readScratchpad(int bytes){
+	//int byte[2];
 	int result = 0;
 	int intermediate = 0;
 	for(int i = 0; i < bytes; i++){
 		intermediate = OWReadByte();
+		//byte[i] = intermediate;
 		result |= intermediate << (8*i);
 	}
+	/*
+	resetSensor();
+	_delay_ms(2000);
+	OWWriteByte(byte[0]);
+	OWWriteByte(byte[1]);
+	*/
 	return result;
 }
 

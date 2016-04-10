@@ -20,17 +20,17 @@
  * PB0: MOSI D1 will be the serial data input
  *
  */
-//#define DEBUG
 #define F_CPU 8000000UL
+#define SERIAL
 #include <avr/io.h>
 #include <util/delay.h>
-#include "dht22.h"
+//#include "dht22.h"
 #ifdef DISPLAY
 #include "ssd1306.h"
 #endif
 #include "ds18b20.h"
 
-#ifdef DEBUG
+#ifdef SERIAL
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include "softuart.h"
@@ -47,13 +47,10 @@ int main(void) {
 	//float humidity = 0;
 	float ds_temp = 0;
 
+#ifdef SERIAL
 
-#ifdef DEBUG
-	softuart_init();
-	softuart_turn_rx_on(); /* redundant - on by default */
-
-	sei();
-	softuart_puts_P("\r\nInit\r\n");
+	//softuart_turn_rx_on(); /* redundant - on by default */
+	char x[10];
 #endif
 #ifdef DISPLAY
 	int line = 0;
@@ -68,15 +65,20 @@ int main(void) {
 	while (1) {
 		//if (readTempData_dht22(&temp, &humidity) == 0) {
 		if (readTempData_ds18b20(&ds_temp) == 0) {
-			/*#ifdef DISPLAY
-			 oled_clear_fast();
-			 #endif
-			 ds_temp = ds_temp/16.0;
-			 //#ifdef DEBUG
-			 //ftoa(temp, x, 4);
-			 //ftoa(humidity, y, 4);
-			 ftoa(ds_temp, z, 4);
-			 for (int j = 0; j < 7; j++) {
+			ds_temp = ds_temp / 16.0;
+#ifdef SERIAL
+			ftoa(ds_temp, x, 2);
+			softuart_init();
+			sei();
+			/*for(i = 0; i < 4; i++){
+				softuart_putchar(x[i]);
+			}*/
+			softuart_puts(x);
+			softuart_puts("\r\n\r\n");
+			cli();
+
+#endif
+			/*for (int j = 0; j < 7; j++) {
 			 oled_clear_fast();
 			 oled_move(line, j);
 
@@ -106,7 +108,7 @@ int main(void) {
 			 line = 0;
 			 }
 
-			 //#endif
+			 #endif
 			 } else {
 			 oled_puts("Error");
 			 #ifdef DEBUG
@@ -115,7 +117,7 @@ int main(void) {
 			 */
 		}
 
-		_delay_ms(5000);
+		_delay_ms(1000);
 	}
 
 	return 1;

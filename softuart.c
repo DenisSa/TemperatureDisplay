@@ -94,8 +94,6 @@ V0.3
 - AVR-Studio Project-File
 */
 
-//#define DEBUG
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
@@ -137,7 +135,7 @@ ISR(SOFTUART_T_COMP_LABEL)
 	char start_bit, flag_in;
 	char tmp;
 
-	// Transmitter Section
+	// Transmitter Section_P("");
 	if ( flag_tx_ready ) {
 		tmp = timer_tx_ctr;
 		if ( --tmp <= 0 ) { // if ( --timer_tx_ctr <= 0 )
@@ -304,20 +302,17 @@ void softuart_putchar( const char ch )
 
 void softuart_puts( const char *s )
 {
+	sei();
 	while ( *s ) {
 		softuart_putchar( *s++ );
 	}
+	cli();
 }
 
 void softuart_puts_p( const char *prg_s )
 {
 	char c;
-
 	while ( ( c = pgm_read_byte( prg_s++ ) ) ) {
 		softuart_putchar(c);
 	}
 }
-
-#ifdef DEBUG
-
-#endif
