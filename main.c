@@ -43,10 +43,10 @@ int intToStr(int x, char str[], int d);
 void reverse(char *str, int len);
 
 int main(void) {
-	//float temp = 0;
+	float temp = 0;
 	//float humidity = 0;
-	float ds_temp = 0;
-
+	int ds_temp = 0;
+	int negative = 0;
 #ifdef SERIAL
 
 	//softuart_turn_rx_on(); /* redundant - on by default */
@@ -65,16 +65,25 @@ int main(void) {
 	while (1) {
 		//if (readTempData_dht22(&temp, &humidity) == 0) {
 		if (readTempData_ds18b20(&ds_temp) == 0) {
-			ds_temp = ds_temp / 16.0;
+			if (ds_temp & 0x8000) {
+				ds_temp=0x10000-ds_temp;
+				negative=1;
+			} else {
+				negative=0;
+			}
+			temp = ds_temp / 16.0;
 #ifdef SERIAL
-			ftoa(ds_temp, x, 2);
+			ftoa(temp, x, 2);
 			softuart_init();
 			sei();
 			/*for(i = 0; i < 4; i++){
-				softuart_putchar(x[i]);
-			}*/
+			 softuart_putchar(x[i]);
+			 }*/
+			if(negative){
+				softuart_puts("-");
+			}
 			softuart_puts(x);
-			softuart_puts("\r\n\r\n");
+			softuart_puts("\r\n");
 			cli();
 
 #endif

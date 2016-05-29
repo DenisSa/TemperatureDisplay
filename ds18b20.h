@@ -2,7 +2,7 @@
 #define TPIN PINB
 #define TDDR DDRB
 
-uint8_t readTempData_ds18b20(float *temperature);
+uint8_t readTempData_ds18b20(int *temperature);
 uint8_t resetSensor();
 void OWBlock(unsigned char *data, int data_len);
 int OWTouchByte(int data);

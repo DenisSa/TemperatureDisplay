@@ -3,7 +3,7 @@
 #include "ds18b20.h"
 #include "bitbang.h"
 
-uint8_t readTempData_ds18b20(float *temperature) {
+uint8_t readTempData_ds18b20(int *temperature) {
 	if(resetSensor() != 0){
 		return 1;
 	}
@@ -17,6 +17,7 @@ uint8_t readTempData_ds18b20(float *temperature) {
 	OWWriteByte(0xCC); //skip rom
 	OWWriteByte(0xBE); //read scratchpad
 	*temperature = readScratchpad(2);
+	//*temperature = 0xFC90;
 	return 0;
 }
 
